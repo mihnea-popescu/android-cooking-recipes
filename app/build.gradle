@@ -3,6 +3,9 @@ plugins {
     id 'com.google.gms.google-services'
 }
 
+Properties properties = new Properties()
+properties.load(project.rootProject.file('secrets.properties').newDataInputStream())
+
 android {
     namespace 'com.mihneapopescu.cookingrecipes'
     compileSdk 32
@@ -15,6 +18,8 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField 'String', 'GOOGLE_SIGN_IN_API_KEY', properties['GOOGLE_SIGN_IN_API_KEY']
     }
 
     buildTypes {
