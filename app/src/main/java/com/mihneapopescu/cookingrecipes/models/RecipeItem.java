@@ -1,15 +1,17 @@
 package com.mihneapopescu.cookingrecipes.models;
 
+import android.graphics.drawable.Drawable;
+
 public class RecipeItem {
 
     private String title;
     private String description;
-    private int imageId;
+    private String imageUrl;
 
-    public RecipeItem(String title, String description, int imageId) {
+    public RecipeItem(String title, String description, String imageUrl) {
         this.title = title;
-        this.description = description;
-        this.imageId = imageId;
+        this.description = description.substring(0, Math.min(description.length(), 150)) + (description.length() > 150 ? "..." : "");
+        this.imageUrl = imageUrl;
     }
 
     public String getTitle() {
@@ -20,7 +22,7 @@ public class RecipeItem {
         return description;
     }
 
-    public int getImageId() {
-        return imageId;
+    public String getImageUrl() {
+        return imageUrl;
     }
 }

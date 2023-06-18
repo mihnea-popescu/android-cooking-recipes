@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.mihneapopescu.cookingrecipes.R;
 import com.mihneapopescu.cookingrecipes.models.RecipeItem;
 
@@ -44,7 +45,7 @@ public class RecipeItemAdapter extends RecyclerView.Adapter<RecipeItemAdapter.Vi
         RecipeItem recipe = recipeList.get(position);
         holder.recipeTitle.setText(recipe.getTitle());
         holder.recipeDescription.setText(recipe.getDescription());
-        holder.recipeImage.setImageResource(recipe.getImageId());
+        Glide.with(holder.recipeImage.getContext()).load(recipe.getImageUrl()).into(holder.recipeImage);
     }
 
     @Override

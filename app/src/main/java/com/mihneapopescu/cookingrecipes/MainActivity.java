@@ -1,5 +1,6 @@
 package com.mihneapopescu.cookingrecipes;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -8,13 +9,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.mihneapopescu.cookingrecipes.adapters.RecipeItemAdapter;
 import com.mihneapopescu.cookingrecipes.auth.LoginActivity;
 import com.mihneapopescu.cookingrecipes.models.RecipeItem;
@@ -27,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private RecipeItemAdapter adapter;
     private List<RecipeItem> recipeList;
     private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +45,9 @@ public class MainActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        // Initialize Firestore
+        db = FirebaseFirestore.getInstance();
 
         if(currentUser == null) {
             // No user is signed in, redirect to LoginActivity
@@ -60,12 +71,24 @@ public class MainActivity extends AppCompatActivity {
         recipeList = new ArrayList<>();
 
         // Add recipes to the list
-        recipeList.add(new RecipeItem("Chicken Biryani", "A spicy and aromatic dish made with basmati rice and chicken", R.drawable.ic_launcher_background));
-        recipeList.add(new RecipeItem("Sarmale", "Bune și gustoase", R.drawable.ic_launcher_background));
-        recipeList.add(new RecipeItem("Shaorma", "Cu de toate", R.drawable.ic_launcher_background));
+        db.collection("recipes")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+//                                Recipe recipe = document.toObject(Recipe.class);
+                                recipeList.add(new RecipeItem(document.getString("name"), document.getString("description"), document.getString("photoUrl")));
+                            }
 
-        adapter = new RecipeItemAdapter(recipeList);
-        recyclerView.setAdapter(adapter);
+                            adapter = new RecipeItemAdapter(recipeList);
+                            recyclerView.setAdapter(adapter);
+                        }
+                    }
+                });
+
+
     }
 
     @Override
