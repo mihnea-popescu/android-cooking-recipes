@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Patterns;
@@ -113,6 +114,17 @@ public class LoginActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // If sign in is successful, update UI with the signed-in user's information
                             FirebaseUser user = mAuth.getCurrentUser();
+
+                            // Save to sharedPreferences
+                            if(user != null) {
+                                String uid = user.getUid();
+
+                                SharedPreferences sharedPref = getSharedPreferences("my_prefs", Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor = sharedPref.edit();
+                                editor.putString("uid", uid);
+                                editor.apply();
+                            }
+
                             Toast.makeText(LoginActivity.this, "Successfully Logged in.", Toast.LENGTH_SHORT).show();
                             // Start the MainActivity
                             startActivity(new Intent(LoginActivity.this, MainActivity.class));
@@ -150,6 +162,16 @@ public class LoginActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // If sign up is successful, update UI with the signed-in user's information
                             FirebaseUser user = mAuth.getCurrentUser();
+
+                            if(user != null) {
+                                String uid = user.getUid();
+
+                                SharedPreferences sharedPref = getSharedPreferences("my_prefs", Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor = sharedPref.edit();
+                                editor.putString("uid", uid);
+                                editor.apply();
+                            }
+
                             Toast.makeText(LoginActivity.this, "Successfully Registered.", Toast.LENGTH_SHORT).show();
                             // Start the MainActivity
                             startActivity(new Intent(LoginActivity.this, MainActivity.class));
@@ -177,6 +199,16 @@ public class LoginActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("LOGIN", "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+
+                            if(user != null) {
+                                String uid = user.getUid();
+
+                                SharedPreferences sharedPref = getSharedPreferences("my_prefs", Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor = sharedPref.edit();
+                                editor.putString("uid", uid);
+                                editor.apply();
+                            }
+
                             // Here, you might want to start the next activity or do anything you want with the user
                             // Start the MainActivity
                             startActivity(new Intent(LoginActivity.this, MainActivity.class));
