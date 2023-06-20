@@ -26,17 +26,25 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.mihneapopescu.cookingrecipes.adapters.RecipeItemAdapter;
 import com.mihneapopescu.cookingrecipes.auth.LoginActivity;
-import com.mihneapopescu.cookingrecipes.models.RecipeItem;
+import com.mihneapopescu.cookingrecipes.items.RecipeItem;
+import com.mihneapopescu.cookingrecipes.models.Ingredient;
+import com.mihneapopescu.cookingrecipes.models.Recipe;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import io.realm.Realm;
+import io.realm.RealmResults;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecipeItemAdapter adapter;
-    private List<RecipeItem> recipeList;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
+    private Realm realm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,15 +59,18 @@ public class MainActivity extends AppCompatActivity {
         // Initialize Firestore
         db = FirebaseFirestore.getInstance();
 
+        // Initialize Realm
+        realm = Realm.getDefaultInstance();
+
         if(currentUser == null) {
             // No user is signed in, redirect to LoginActivity
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(intent);
             finish();  // This prevents the user from being able to hit the back button to return to MainActivity
-
             return;
         }
 
+        // Initialize recyclerView
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -70,27 +81,80 @@ public class MainActivity extends AppCompatActivity {
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this, linearLayoutManager.getOrientation());
         recyclerView.addItemDecoration(dividerItemDecoration);
 
-        recipeList = new ArrayList<>();
+        // Fetch data from the server
+        fetchData();
+    }
 
-        // Add recipes to the list
+    public void fetchData() {
         db.collection("recipes")
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-//                                Recipe recipe = document.toObject(Recipe.class);
-                                recipeList.add(new RecipeItem(document.getString("name"), document.getString("description"), document.getString("photoUrl")));
-                            }
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        int totalDocuments = task.getResult().size();
+                        AtomicInteger processedDocuments = new AtomicInteger(0);
 
-                            adapter = new RecipeItemAdapter(recipeList);
-                            recyclerView.setAdapter(adapter);
-                        }
+                        realm.executeTransaction(realm -> {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Recipe recipe;
+
+                                if(realm.where(Recipe.class).equalTo("id", document.getId()).count() == 0) {
+                                    recipe = realm.createObject(Recipe.class, document.getId());
+                                    recipe.setName(document.getString("name"));
+                                    recipe.setDescription(document.getString("description"));
+                                    recipe.setPhotoUrl(document.getString("photoUrl"));
+                                    recipe.setYoutubeUrl(document.getString("youtubeUrl"));
+                                }
+                                else {
+                                    recipe = realm.where(Recipe.class).equalTo("id", document.getId()).findFirst();
+                                }
+
+
+                                // Get the ingredients subcollection
+                                document.getReference().collection("ingredients")
+                                        .get()
+                                        .addOnCompleteListener(subTask -> {
+                                            if (subTask.isSuccessful()) {
+                                                for (QueryDocumentSnapshot ingredientDocument : subTask.getResult()) {
+                                                    String ingredientId = ingredientDocument.getId();
+
+                                                    if(realm.where(Ingredient.class).equalTo("id", ingredientId).count() == 0) {
+                                                        realm.executeTransaction(realm1 -> {
+                                                            Ingredient ingredient = ingredientDocument.toObject(Ingredient.class);
+                                                            ingredient.setId(ingredientId);
+
+                                                            // Save the ingredient to Realm
+                                                            realm1.copyToRealmOrUpdate(ingredient);
+
+                                                            recipe.getIngredients().add(ingredient);
+                                                        });
+                                                    }
+                                                }
+                                            } else {
+                                                Log.d("INGREDIENTS", "Error getting ingredients: ", task.getException());
+                                            }
+
+                                            if(processedDocuments.incrementAndGet() == totalDocuments) {
+                                                updateRecipeListUI();
+                                            }
+                                        });
+                            }
+                        });
                     }
                 });
+    }
 
+    private void updateRecipeListUI() {
+        // Update Recipe List
+        List<RecipeItem> recipeList = new ArrayList<>();
 
+        RealmResults<Recipe> recipes = realm.where(Recipe.class).findAll();
+
+        for(Recipe recipe : recipes) {
+            recipeList.add(new RecipeItem(recipe.getName(), recipe.getDescription(), recipe.getPhotoUrl()));
+        }
+
+        adapter = new RecipeItemAdapter(recipeList);
+        recyclerView.setAdapter(adapter);
     }
 
     private boolean logOut() {
@@ -101,6 +165,9 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.remove("uid");
         editor.apply();
+
+        // Delete realm data
+        realm.executeTransaction(realm1 -> realm1.deleteAll());
 
         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
         startActivity(intent);

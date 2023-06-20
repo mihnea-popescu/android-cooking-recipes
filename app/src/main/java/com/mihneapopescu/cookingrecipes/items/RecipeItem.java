@@ -1,4 +1,4 @@
-package com.mihneapopescu.cookingrecipes.models;
+package com.mihneapopescu.cookingrecipes.items;
 
 import android.graphics.drawable.Drawable;
 

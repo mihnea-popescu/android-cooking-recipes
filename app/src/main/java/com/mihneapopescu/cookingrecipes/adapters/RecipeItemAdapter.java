@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.mihneapopescu.cookingrecipes.R;
-import com.mihneapopescu.cookingrecipes.models.RecipeItem;
+import com.mihneapopescu.cookingrecipes.items.RecipeItem;
 
 import java.util.List;
 
