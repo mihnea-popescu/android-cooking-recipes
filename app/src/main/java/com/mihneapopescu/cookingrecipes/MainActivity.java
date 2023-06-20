@@ -2,11 +2,14 @@ package com.mihneapopescu.cookingrecipes;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -94,6 +97,9 @@ public class MainActivity extends AppCompatActivity {
                         AtomicInteger processedDocuments = new AtomicInteger(0);
 
                         realm.executeTransaction(realm -> {
+                            Recipe newAddedRecipe = null;
+                            Boolean firstTime = (realm.where(Recipe.class).count() == 0);
+
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Recipe recipe;
 
@@ -103,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
                                     recipe.setDescription(document.getString("description"));
                                     recipe.setPhotoUrl(document.getString("photoUrl"));
                                     recipe.setYoutubeUrl(document.getString("youtubeUrl"));
+                                    newAddedRecipe = recipe;
                                 }
                                 else {
                                     recipe = realm.where(Recipe.class).equalTo("id", document.getId()).findFirst();
@@ -110,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                                 // Get the ingredients subcollection
+                                Recipe finalNewAddedRecipe = newAddedRecipe;
                                 document.getReference().collection("ingredients")
                                         .get()
                                         .addOnCompleteListener(subTask -> {
@@ -135,6 +143,10 @@ public class MainActivity extends AppCompatActivity {
 
                                             if(processedDocuments.incrementAndGet() == totalDocuments) {
                                                 updateRecipeListUI();
+
+                                                if(finalNewAddedRecipe != null && !firstTime) {
+                                                    sendNewRecipeNotification(recipe);
+                                                }
                                             }
                                         });
                             }
@@ -155,6 +167,27 @@ public class MainActivity extends AppCompatActivity {
 
         adapter = new RecipeItemAdapter(recipeList);
         recyclerView.setAdapter(adapter);
+    }
+
+    private void sendNewRecipeNotification(Recipe recipe) {
+        String channelId = "recipe_channel";
+        String channelName = "Recipe Channel";
+
+        NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // If the Android Version is greater than Oreo
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel notificationChannel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_DEFAULT);
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
+                .setSmallIcon(R.mipmap.ic_launcher) // set icon here
+                .setContentTitle("New Recipe Published: " + recipe.getName())
+                .setContentText(recipe.getDescription())
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+        notificationManager.notify(1, builder.build());
     }
 
     private boolean logOut() {
