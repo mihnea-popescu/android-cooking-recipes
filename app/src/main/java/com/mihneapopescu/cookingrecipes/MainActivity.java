@@ -162,10 +162,10 @@ public class MainActivity extends AppCompatActivity {
         RealmResults<Recipe> recipes = realm.where(Recipe.class).findAll();
 
         for(Recipe recipe : recipes) {
-            recipeList.add(new RecipeItem(recipe.getName(), recipe.getDescription(), recipe.getPhotoUrl()));
+            recipeList.add(new RecipeItem(recipe.getId(), recipe.getName(), recipe.getDescription(), recipe.getPhotoUrl()));
         }
 
-        adapter = new RecipeItemAdapter(recipeList);
+        adapter = new RecipeItemAdapter(recipeList, this);
         recyclerView.setAdapter(adapter);
     }
 

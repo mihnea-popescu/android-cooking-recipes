@@ -1,5 +1,7 @@
 package com.mihneapopescu.cookingrecipes.adapters;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.mihneapopescu.cookingrecipes.R;
+import com.mihneapopescu.cookingrecipes.RecipeDetailActivity;
 import com.mihneapopescu.cookingrecipes.items.RecipeItem;
 
 import java.util.List;
@@ -16,6 +19,7 @@ import java.util.List;
 public class RecipeItemAdapter extends RecyclerView.Adapter<RecipeItemAdapter.ViewHolder> {
 
     private List<RecipeItem> recipeList;
+    private Context context;
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView recipeImage;
@@ -30,8 +34,9 @@ public class RecipeItemAdapter extends RecyclerView.Adapter<RecipeItemAdapter.Vi
         }
     }
 
-    public RecipeItemAdapter(List<RecipeItem> recipeList) {
+    public RecipeItemAdapter(List<RecipeItem> recipeList, Context context) {
         this.recipeList = recipeList;
+        this.context = context;
     }
 
     @Override
@@ -46,6 +51,13 @@ public class RecipeItemAdapter extends RecyclerView.Adapter<RecipeItemAdapter.Vi
         holder.recipeTitle.setText(recipe.getTitle());
         holder.recipeDescription.setText(recipe.getDescription());
         Glide.with(holder.recipeImage.getContext()).load(recipe.getImageUrl()).into(holder.recipeImage);
+
+        // Add the click listener
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(context, RecipeDetailActivity.class);
+            intent.putExtra("RECIPE_ID", recipe.getId());
+            context.startActivity(intent);
+        });
     }
 
     @Override
