@@ -33,6 +33,7 @@ import com.mihneapopescu.cookingrecipes.auth.LoginActivity;
 import com.mihneapopescu.cookingrecipes.items.RecipeItem;
 import com.mihneapopescu.cookingrecipes.models.Ingredient;
 import com.mihneapopescu.cookingrecipes.models.Recipe;
+import com.mihneapopescu.cookingrecipes.models.Review;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -116,6 +117,31 @@ public class MainActivity extends AppCompatActivity {
                                     recipe = realm.where(Recipe.class).equalTo("id", document.getId()).findFirst();
                                 }
 
+                                // Get the reviews subcollection
+                                document.getReference().collection("reviews")
+                                        .get()
+                                        .addOnCompleteListener(subTask -> {
+                                           if(subTask.isSuccessful()) {
+                                                for(QueryDocumentSnapshot reviewDocument : subTask.getResult()) {
+                                                    String reviewId = reviewDocument.getId();
+
+                                                    if(realm.where(Review.class).equalTo("id", reviewId).count() > 0) {
+                                                        continue;
+                                                    }
+
+                                                    realm.executeTransaction(realm1 -> {
+                                                        Review review = reviewDocument.toObject(Review.class);
+                                                        review.setId(reviewId);
+                                                        review.setRecipe(recipe);
+
+                                                        recipe.getReviews().add(review);
+                                                    });
+                                                }
+                                           }
+                                           else {
+                                               Log.d("REVIEWS", "Error getting reviews: ", task.getException());
+                                           }
+                                        });
 
                                 // Get the ingredients subcollection
                                 Recipe finalNewAddedRecipe = newAddedRecipe;

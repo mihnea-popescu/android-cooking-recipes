@@ -13,6 +13,7 @@ public class Recipe extends RealmObject {
     private String description;
     private String youtubeUrl;
     private RealmList<Ingredient> ingredients;
+    private RealmList<Review> reviews;
 
     public String getId() {
         return id;
@@ -68,5 +69,13 @@ public class Recipe extends RealmObject {
 
     public void setIngredients(RealmList<Ingredient> ingredients) {
         this.ingredients = ingredients;
+    }
+
+    public RealmList<Review> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(RealmList<Review> reviews) {
+        this.reviews = reviews;
     }
 }
