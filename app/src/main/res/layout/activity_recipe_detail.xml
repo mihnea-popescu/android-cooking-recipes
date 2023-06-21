@@ -7,7 +7,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
         <ImageView
@@ -26,7 +26,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Ingrediente"
+            android:text="Ingredients"
             android:textSize="20sp"
             android:paddingTop="16dp"/>
 
@@ -42,6 +42,20 @@
             android:layout_height="wrap_content"
             android:textSize="16sp"
             android:paddingTop="16dp"/>
+
+        <TextView
+            android:id="@+id/youtubePlayerTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Video"
+            android:textSize="20sp"
+            android:paddingTop="16dp"
+            android:visibility="invisible"/>
+
+        <WebView
+            android:id="@+id/youtubePlayer"
+            android:layout_width="match_parent"
+            android:layout_height="200dp" />
 
     </LinearLayout>
 </ScrollView>

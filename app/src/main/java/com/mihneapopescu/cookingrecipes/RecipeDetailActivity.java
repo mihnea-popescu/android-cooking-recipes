@@ -1,6 +1,8 @@
 package com.mihneapopescu.cookingrecipes;
 
 import android.os.Bundle;
+import android.view.View;
+import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,6 +17,8 @@ import com.mihneapopescu.cookingrecipes.models.Recipe;
 import io.realm.Realm;
 
 public class RecipeDetailActivity extends AppCompatActivity {
+    private WebView youtubePlayer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,5 +46,19 @@ public class RecipeDetailActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         IngredientItemAdapter ingredientItemAdapter = new IngredientItemAdapter(recipe.getIngredients());
         recyclerView.setAdapter(ingredientItemAdapter);
+
+        // Create the youtube embedded player
+        String youtubeUrl = recipe.getYoutubeUrl();
+
+        if(youtubeUrl.length() > 0) {
+            findViewById(R.id.youtubePlayerTitle).setVisibility(View.VISIBLE);
+
+            youtubePlayer = findViewById(R.id.youtubePlayer);
+            youtubePlayer.getSettings().setJavaScriptEnabled(true);
+
+            String videoId = youtubeUrl.split("v=")[1];
+
+            youtubePlayer.loadData("<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/" + videoId + "\" frameborder=\"0\"></iframe>", "text/html" , "utf-8" );
+        }
     }
 }
