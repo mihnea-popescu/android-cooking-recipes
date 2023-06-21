@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -145,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
                                                 updateRecipeListUI();
 
                                                 if(finalNewAddedRecipe != null && !firstTime) {
-                                                    sendNewRecipeNotification(recipe);
+                                                    sendNewRecipeNotification(finalNewAddedRecipe);
                                                 }
                                             }
                                         });
@@ -181,11 +182,18 @@ public class MainActivity extends AppCompatActivity {
             notificationManager.createNotificationChannel(notificationChannel);
         }
 
+        Intent intent = new Intent(this, RecipeDetailActivity.class);
+        intent.putExtra("RECIPE_ID", recipe.getId());
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
                 .setSmallIcon(R.mipmap.ic_launcher) // set icon here
                 .setContentTitle("New Recipe Published: " + recipe.getName())
                 .setContentText(recipe.getDescription())
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_IMMUTABLE);
+        builder.setContentIntent(pendingIntent);
+        builder.setAutoCancel(true);
 
         notificationManager.notify(1, builder.build());
     }
