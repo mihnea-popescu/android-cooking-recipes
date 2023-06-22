@@ -56,5 +56,64 @@
             android:id="@+id/youtubePlayer"
             android:layout_width="match_parent"
             android:layout_height="200dp" />
+
+        <TextView
+            android:id="@+id/reviewsTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Reviews"
+            android:textSize="20sp"
+            android:paddingTop="16dp"
+            android:visibility="invisible"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/reviewsRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical" />
+
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/review_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/review_form"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:id="@+id/review_form_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Add a Review"
+                    android:textSize="18sp"
+                    android:textStyle="bold"/>
+
+                <EditText
+                    android:id="@+id/review_message"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Your review message..."
+                    android:inputType="textMultiLine" />
+
+                <ImageButton
+                    android:id="@+id/review_photo_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@android:drawable/ic_menu_camera"
+                    android:contentDescription="Add Photo"/>
+
+                <Button
+                    android:id="@+id/submit_review_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Submit Review"/>
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
     </LinearLayout>
 </ScrollView>

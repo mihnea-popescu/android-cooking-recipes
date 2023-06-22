@@ -1,9 +1,11 @@
 package com.mihneapopescu.cookingrecipes.models;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 public class Review extends RealmObject {
 
+    @PrimaryKey
     private String id;
     private String email;
     private String photoUrl;

@@ -21,6 +21,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField 'String', 'GOOGLE_SIGN_IN_API_KEY', properties['GOOGLE_SIGN_IN_API_KEY']
+        buildConfigField 'String', 'IMGUR_CLIENT_ID', properties['IMGUR_CLIENT_ID']
     }
 
     buildTypes {
