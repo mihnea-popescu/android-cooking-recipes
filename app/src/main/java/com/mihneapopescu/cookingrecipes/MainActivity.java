@@ -13,6 +13,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -30,6 +31,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.mihneapopescu.cookingrecipes.adapters.RecipeItemAdapter;
 import com.mihneapopescu.cookingrecipes.auth.LoginActivity;
+import com.mihneapopescu.cookingrecipes.broadcast_receivers.NetworkChangeReceiver;
 import com.mihneapopescu.cookingrecipes.items.RecipeItem;
 import com.mihneapopescu.cookingrecipes.models.Ingredient;
 import com.mihneapopescu.cookingrecipes.models.Recipe;
@@ -50,6 +52,31 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private Realm realm;
+    private NetworkChangeReceiver internetAvailabilityReceiver;
+
+    // Broadcast receiver
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Create an instance of the broadcast receiver
+        internetAvailabilityReceiver = new NetworkChangeReceiver();
+
+        // Create an intent filter with the action you want to listen for
+        IntentFilter intentFilter = new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE");
+
+        // Register the receiver with this activity and the intent filter
+        registerReceiver(internetAvailabilityReceiver, intentFilter);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // Unregister the broadcast receiver
+        if (internetAvailabilityReceiver != null) {
+            unregisterReceiver(internetAvailabilityReceiver);
+        }
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
