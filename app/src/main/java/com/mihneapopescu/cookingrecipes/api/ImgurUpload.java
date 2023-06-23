@@ -1,4 +1,4 @@
-package com.mihneapopescu.cookingrecipes.services;
+package com.mihneapopescu.cookingrecipes.api;
 
 import android.app.Activity;
 import android.graphics.Bitmap;

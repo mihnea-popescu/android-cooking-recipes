@@ -112,7 +112,6 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // If sign in is successful, update UI with the signed-in user's information
                             FirebaseUser user = mAuth.getCurrentUser();
 
                             // Save to sharedPreferences
@@ -131,9 +130,7 @@ public class LoginActivity extends AppCompatActivity {
                             // Finish the LoginActivity
                             finish();
                         } else {
-                            // If sign in fails, display a message to the user
                             Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
-                            // updateUI(null);
                         }
                     }
                 });
@@ -160,7 +157,6 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // If sign up is successful, update UI with the signed-in user's information
                             FirebaseUser user = mAuth.getCurrentUser();
 
                             if(user != null) {
@@ -178,10 +174,8 @@ public class LoginActivity extends AppCompatActivity {
                             // Finish the LoginActivity
                             finish();
                         } else {
-                            // If sign up fails, display a message to the user
                             Log.w("Authentication", "signInWithEmail:failure", task.getException());  // Log the error
                             Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
-                            // updateUI(null);
                         }
                     }
                 });
@@ -196,7 +190,6 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
                             Log.d("LOGIN", "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
 
@@ -209,7 +202,6 @@ public class LoginActivity extends AppCompatActivity {
                                 editor.apply();
                             }
 
-                            // Here, you might want to start the next activity or do anything you want with the user
                             // Start the MainActivity
                             startActivity(new Intent(LoginActivity.this, MainActivity.class));
                             // Finish the LoginActivity
@@ -228,11 +220,9 @@ public class LoginActivity extends AppCompatActivity {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
 
-            // Signed in successfully, show authenticated UI.
+            // Signed in successfully
             firebaseAuthWithGoogle(account);
         } catch (ApiException e) {
-            // The ApiException status code indicates the detailed failure reason.
-            // Please refer to the GoogleSignInStatusCodes class reference for more information.
             Log.w("LOGIN", "signInResult:failed code=" + e.getStatusCode());
         }
     }
@@ -252,7 +242,7 @@ public class LoginActivity extends AppCompatActivity {
                     result -> {
                         if (result.getResultCode() == Activity.RESULT_OK) {
                             Intent data = result.getData();
-                            // The Task returned from this call is always completed, no need to attach a listener
+
                             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
                             handleGoogleSignInResult(task);
                         }

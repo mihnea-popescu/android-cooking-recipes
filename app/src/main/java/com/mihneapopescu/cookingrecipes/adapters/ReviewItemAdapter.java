@@ -35,8 +35,6 @@ public class ReviewItemAdapter extends RecyclerView.Adapter<ReviewItemAdapter.Re
         holder.email.setText(review.getEmail());
         holder.message.setText(review.getMessage());
 
-        // Assuming you use Glide or Picasso to handle image loading
-        // You can handle this part based on your preference
         if(review.getPhotoUrl() != "") {
             holder.photo.setVisibility(View.VISIBLE);
 

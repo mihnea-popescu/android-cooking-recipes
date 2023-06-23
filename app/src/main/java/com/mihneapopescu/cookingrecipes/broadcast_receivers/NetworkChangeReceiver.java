@@ -13,7 +13,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
     public void onReceive(final Context context, final Intent intent) {
 
         if(checkInternet(context)){
-            Toast.makeText(context, "Connected to internet!", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "Connected to internet.", Toast.LENGTH_LONG).show();
         }
 
     }

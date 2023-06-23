@@ -1,7 +1,5 @@
 package com.mihneapopescu.cookingrecipes.items;
 
-import android.graphics.drawable.Drawable;
-
 public class RecipeItem {
 
     private String id;

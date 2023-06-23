@@ -3,13 +3,11 @@ package com.mihneapopescu.cookingrecipes;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
@@ -24,7 +22,6 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -41,13 +38,10 @@ import com.mihneapopescu.cookingrecipes.services.helpers.BitmapToUri;
 import com.mihneapopescu.cookingrecipes.services.interfaces.ImgurUploadCallback;
 import com.mihneapopescu.cookingrecipes.models.Recipe;
 import com.mihneapopescu.cookingrecipes.models.Review;
-import com.mihneapopescu.cookingrecipes.services.ImgurUpload;
+import com.mihneapopescu.cookingrecipes.api.ImgurUpload;
 
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
@@ -312,7 +306,6 @@ public class RecipeDetailActivity extends AppCompatActivity {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 } else {
-                    // Permission denied, show an explanation to the user
                     if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
                         Toast.makeText(this, "Storage permission is needed to access photos", Toast.LENGTH_SHORT).show();
                     }
